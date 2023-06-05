@@ -10,6 +10,7 @@ import (
 	appservice "github.com/redhat-appstudio/application-api/api/v1alpha1"
 	"github.com/redhat-appstudio/e2e-tests/pkg/constants"
 	"github.com/redhat-appstudio/e2e-tests/pkg/framework"
+	"github.com/redhat-appstudio/e2e-tests/pkg/logs"
 	"github.com/redhat-appstudio/e2e-tests/pkg/utils"
 	"github.com/redhat-appstudio/e2e-tests/pkg/utils/tekton"
 	e2eConfig "github.com/redhat-appstudio/e2e-tests/tests/e2e-demos/config"
@@ -85,6 +86,8 @@ var _ = framework.E2ESuiteDescribe(Label("e2e-demo"), func() {
 				// collect SPI ResourceQuota metrics (temporary)
 				err := fw.AsKubeAdmin.CommonController.GetResourceQuotaInfo("e2e-demo", namespace, "appstudio-crds-spi")
 				Expect(err).NotTo(HaveOccurred())
+
+				logs.StoreTestLogs(namespace, "application-service", fw.AsKubeAdmin.CommonController, fw.AsKubeAdmin.TektonController)
 
 				if !CurrentSpecReport().Failed() {
 					Expect(fw.AsKubeDeveloper.HasController.DeleteAllComponentsInASpecificNamespace(namespace, 30*time.Second)).To(Succeed())

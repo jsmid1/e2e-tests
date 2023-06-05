@@ -841,3 +841,19 @@ func (s *SuiteController) GetTask(name, namespace string) (*v1beta1.Task, error)
 	}
 	return &task, nil
 }
+
+func (s *SuiteController) StorePipelineRuns(testNamespace string, c *common.SuiteController) error {
+	pipelineRuns, err := s.ListAllPipelineRuns(testNamespace)
+
+	g.GinkgoWriter.Printf("found %d pipelineRuns in namespace: %s\n", len(pipelineRuns.Items), testNamespace)
+
+	if err != nil {
+		return fmt.Errorf("got error fetching PR list: %s\n", err.Error())
+	}
+
+	for _, pipelineRun := range pipelineRuns.Items {
+		StorePipelineRun(&pipelineRun, testNamespace, c)
+	}
+
+	return nil
+}
